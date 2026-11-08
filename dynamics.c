@@ -1,5 +1,6 @@
 #include "dynamics.h"
 #include "SpiceUsr.h"
+#include "mercury_gravity.h"
 #include <math.h>
 
 #define AU_KM      149597870.7        /* 1 АЕ в км */
@@ -17,7 +18,7 @@ const char *BODY_NAMES[N_BODIES] = {
 
 const double BODY_GM[N_BODIES] = {
     2.9591220828411956e-04, /* Sun */
-    4.9125001948893182e-11, /* Mercury */
+    MERCURY_GM_AU3_DAY2, /* Mercury: consistent with HgM009.sha */
     7.2434523326441187e-10, /* Venus */
     8.8876924467071022e-10, /* Earth */
     9.5495488297258119e-11, /* Mars */
@@ -172,7 +173,17 @@ void rhs(double et_days, const double y[STATE_DIM], double dydt[STATE_DIM]) {
     dydt[0] = v_rel[0];  
     dydt[1] = v_rel[1];  
     dydt[2] = v_rel[2];
-    dydt[3] = a_msg[0] - a_merc[0];
-    dydt[4] = a_msg[1] - a_merc[1];
-    dydt[5] = a_msg[2] - a_merc[2];
+    /* Неглавная (гармоническая) часть гравитации Меркурия. */
+    double a_harmonics_j2000[3] = {0.0, 0.0, 0.0};
+    if (!mercury_gravity_acceleration(et_days, r_rel,
+                                      a_harmonics_j2000)) {
+        /* Initialization is checked in main before integration. */
+        a_harmonics_j2000[0] = 0.0;
+        a_harmonics_j2000[1] = 0.0;
+        a_harmonics_j2000[2] = 0.0;
+    }
+
+    dydt[3] = a_msg[0] - a_merc[0] + a_harmonics_j2000[0];
+    dydt[4] = a_msg[1] - a_merc[1] + a_harmonics_j2000[1];
+    dydt[5] = a_msg[2] - a_merc[2] + a_harmonics_j2000[2];
 }

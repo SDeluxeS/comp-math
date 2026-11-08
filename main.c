@@ -5,6 +5,7 @@
 #include "SpiceUsr.h"     
 #include "dynamics.h"
 #include "integrator.h"
+#include "mercury_gravity.h"
 
 #define AU_KM      149597870.7        
 #define DAY_SEC    86400.0            
@@ -21,7 +22,17 @@ int main(void)
         return 1;
     }
 
-    const double JD0      = 2455646.81948;
+    /* Инициализация поля HgM009 до начала интегрирования. */
+    int grav_status = mercury_gravity_init("HgM009.sha");
+    if (grav_status <= 0) {
+        fprintf(stderr,
+                "Ошибка загрузки коэффициентов HgM009.sha (код %d)\n",
+                grav_status);
+        kclear_c();
+        return 1;
+    }
+
+    const double JD0      = 2455646.83;
     const double J2000_JD = 2451545.0;
     
     double et0_sec = (JD0 - J2000_JD) * DAY_SEC;   
@@ -43,7 +54,7 @@ int main(void)
     double h_sec = 60.0;                  
     double h_days = h_sec / DAY_SEC;      
     
-    double T_sec = 24.0 * 3600.0;         
+    double T_sec = 20.0 * 3600.0;         
     int n_steps = (int)(T_sec / h_sec);  
 
     double *ts = malloc((n_steps + 1) * sizeof(double));
