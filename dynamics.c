@@ -1,7 +1,7 @@
 #include "dynamics.h"
 #include "SpiceUsr.h"
 #include "mercury_gravity.h"
-#include <math.h>
+#include "include/astro_types.hpp"
 
 #define AU_KM      149597870.7        /* 1 АЕ в км */
 #define DAY_SEC    86400.0            /* 1 сутки в секундах */
@@ -30,19 +30,7 @@ const double BODY_GM[N_BODIES] = {
     2.1750964786022513e-12  /* Pluto */
 };
 
-static inline double vdot(const double a[3], const double b[3]) {
-    return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
-}
 
-static inline double vnorm(const double a[3]) {
-    return sqrt(vdot(a, a));
-}
-
-static inline void vsub(const double a[3], const double b[3], double r[3]) {
-    r[0] = a[0] - b[0]; 
-    r[1] = a[1] - b[1]; 
-    r[2] = a[2] - b[2];
-}
 
 static void get_body_states(double et_sec, double X[N_BODIES][3], double V[N_BODIES][3], double A[N_BODIES][3]) {
     double state[6], lt;
