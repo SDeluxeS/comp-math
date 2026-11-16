@@ -88,27 +88,6 @@ double Spice::tdbMinusTtFromTt(double etTtSeconds) const {
     return stateArray[0];
 }
 
-double Spice::gravitationalParameter(
-    int bodyNaif,
-    double fallbackKm3PerSec2) const {
 
-    SpiceInt dimension = 0;
-    SpiceDouble values[1]{};
-
-    bodvcd_c(bodyNaif, "GM", 1, &dimension, values);
-
-    if (failed_c()) {
-        reset_c();
-        return fallbackKm3PerSec2;
-    }
-
-    if (dimension >= 1 &&
-        std::isfinite(values[0]) &&
-        values[0] > 0.0) {
-        return values[0];
-    }
-
-    return fallbackKm3PerSec2;
-}
 
 }

@@ -23,7 +23,7 @@ int main(void)
     }
 
     /* Инициализация поля HgM009 до начала интегрирования. */
-    int grav_status = mercury_gravity_init("HgM009.sha");
+    int grav_status = mercury_gravity_init("kernels/HgM009.sha");
     if (grav_status <= 0) {
         fprintf(stderr,
                 "Ошибка загрузки коэффициентов HgM009.sha (код %d)\n",
@@ -76,7 +76,9 @@ int main(void)
         return 1;
     }
     
-    /* Записываем подробный заголовок колонок */
+    /* Записываем эпоху интегрирования и подробный заголовок колонок.
+       Light-Time читает orbit_diff.txt напрямую, без промежуточной конвертации. */
+    fprintf(fout, "# Epoch_TDB_JD=%.12f\n", JD0);
     fprintf(fout, "# 1:t_hours  2:|dr|_km  3:|dv|_m/s  "
                   "4:mx_km  5:my_km  6:mz_km  7:mvx_km/s  8:mvy_km/s  9:mvz_km/s  "
                   "10:rx_km  11:ry_km  12:rz_km  13:rvx_km/s  14:rvy_km/s  15:rvz_km/s\n");
@@ -111,7 +113,7 @@ int main(void)
         if (dv > max_dv) max_dv = dv;
 
         /* Записываем все данные в одну строку */
-        fprintf(fout, "%.6f  %.6e  %.6e  "
+        fprintf(fout, "%.12f  %.6e  %.6e  "
                       "%.6e  %.6e  %.6e  %.6e  %.6e  %.6e  "
                       "%.6e  %.6e  %.6e  %.6e  %.6e  %.6e\n",
                 (t_sec - et0_sec) / 3600.0, dr, dv * 1000.0,

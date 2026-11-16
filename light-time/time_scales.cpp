@@ -1,5 +1,5 @@
 #include "include/time_scales.hpp"
-#include <sofa.h>
+#include <include/sofa.h>
 
 #include <cmath>
 #include <stdexcept>
@@ -29,7 +29,7 @@ JulianDate TimeScales::ttToTdb(const JulianDate& tt) const {
 }
 
 JulianDate TimeScales::ttToTai(const JulianDate& tt) const {
-    const double ttParts[2] = tt.sofaParts();
+    const auto ttParts = tt.sofaParts();
 
     double tai1 = 0.0;
     double tai2 = 0.0;

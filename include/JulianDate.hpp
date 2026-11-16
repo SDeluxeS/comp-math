@@ -2,12 +2,13 @@
 
 #include <cmath>
 #include "include/astro_types.hpp"
-#include <third_party/QD/include/qd/dd_real.h>
+#include <qd/dd_real.h>
 #include <stdexcept>
+#include <array>
 
 namespace lt {
 
-
+using SofaDate = std::array<double, 2>;
 // Julian Date хранится внутри как QD double-double.
 // При передаче в SOFA значение разбивается на две части double.
 class JulianDate {
@@ -53,11 +54,12 @@ public:
     }
 
     double daysSince(const JulianDate& other) const {
-        return static_cast<double>(jd_ - other.jd_);
+        return to_double(jd_ - other.jd_);
     }
 
+
     double daysSinceJulianDate(double otherJd) const {
-        return static_cast<double>(jd_ - dd_real(otherJd));
+        return to_double(jd_ - dd_real(otherJd));
     }
 
     // MJD минус заданная эпоха MJD.
@@ -65,15 +67,15 @@ public:
     // на больших значениях MJD.
     double daysSinceMjd(double otherMjd) const {
         const dd_real thisMjd = jd_ - dd_real(2400000.5);
-        return static_cast<double>(thisMjd - dd_real(otherMjd));
+        return to_double(thisMjd - dd_real(otherMjd));
     }
 
     double mjd() const {
-        return static_cast<double>(jd_ - dd_real(2400000.5));
+        return to_double(jd_ - dd_real(2400000.5));
     }
 
     double secondsFromJ2000() const {
-        return static_cast<double>(
+        return to_double(
             (jd_ - dd_real(2451545.0)) * dd_real(86400.0)
         );
     }
@@ -82,8 +84,8 @@ public:
         // Целую часть выбираем через double. Даже если дата очень близка
         // к целому JD и округление перешло через границу, ниже дробная
         // часть нормализуется обратно.
-        double part1 = std::floor(static_cast<double>(jd_));
-        double part2 = static_cast<double>(jd_ - dd_real(part1));
+        double part1 = std::floor(to_double(jd_));
+        double part2 = to_double(jd_ - dd_real(part1));
 
         if (part2 < 0.0) {
             part1 -= 1.0;

@@ -1,0 +1,45 @@
+# Build in Linux / WSL Ubuntu (the bundled .a files are ELF/Linux archives).
+# Run from the project root: make -f Makefile.lighttime
+
+.DEFAULT_GOAL := all
+
+CXX ?= g++
+BUILD_DIR := build/lighttime
+
+CSPICE_LIB ?= lib/cspice.a
+SOFA_LIB   ?= lib/libsofa_c.a
+QD_LIBS    ?= -lqd
+QD_INCLUDE ?= /usr/include
+
+CPPFLAGS += -I. -Iinclude -Ilight-time -I$(QD_INCLUDE)
+CXXFLAGS += -std=c++17 -O2 -Wall -Wextra
+
+SOURCES := \
+    light-time/cubic_spline.cpp \
+    light-time/spice.cpp \
+    light-time/time_scales.cpp \
+    light-time/eop.cpp \
+    light-time/stations.cpp \
+    light-time/spacecraft_ephemeris.cpp \
+    light-time/light_time.cpp \
+    light-time/main.cpp
+
+OBJECTS := $(patsubst light-time/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
+
+.PHONY: all clean check-deps
+all: lighttime
+
+check-deps:
+	@test -f "$(CSPICE_LIB)" || { echo "Missing $(CSPICE_LIB)"; exit 1; }
+	@test -f "$(SOFA_LIB)" || { echo "Missing $(SOFA_LIB)"; exit 1; }
+	@test -f "$(QD_INCLUDE)/qd/dd_real.h" || { echo "Missing QD headers; install libqd-dev or set QD_INCLUDE"; exit 1; }
+
+$(BUILD_DIR)/%.o: light-time/%.cpp | check-deps
+	@mkdir -p $(@D)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+lighttime: $(OBJECTS) $(SOFA_LIB) $(CSPICE_LIB)
+	$(CXX) -o $@ $(OBJECTS) $(SOFA_LIB) $(CSPICE_LIB) $(QD_LIBS) -lm
+
+clean:
+	rm -rf build/lighttime lighttime

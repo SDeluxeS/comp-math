@@ -1,0 +1,75 @@
+DSN STATION COORDINATES
+
+Station locations used for planetary spacecraft tracking,
+with identifying numbers assigned by the NASA Deep Space Network,
+antenna diameters, and antenna types.
+
+Locations are in ITRF 2008 reference frame at epoch 2005.0.
+
+##    d   typ      x(m)           y(m)           z(m)      vx(m/yr)  vy(m/yr)  vz(m/yr)
+
+12*  26m  H-D  -2350442.8914  -4651978.5310   3665629.1362  -0.0156  0.0063  -0.0030
+12   34m  H-D  -2350444.0132  -4651980.7513   3665630.8975  -0.0156  0.0063  -0.0030
+13*  26m  A-E  -2351129.3250  -4655476.9930   3660956.8820  -0.0156  0.0063  -0.0030
+13   34m  BWG  -2351112.6627  -4655530.6184   3660912.6875  -0.0156  0.0063  -0.0030
+14   70m  A-E  -2353621.3988  -4641341.4050   3677052.2385  -0.0156  0.0063  -0.0030
+15   34m  HEF  -2353538.9600  -4641649.4082   3676669.9412  -0.0156  0.0063  -0.0030
+24   34m  BWG  -2354906.7148  -4646840.0771   3669242.2852  -0.0156  0.0063  -0.0030
+25   34m  BWG  -2355022.0181  -4646953.1865   3669040.5265  -0.0156  0.0063  -0.0030
+26   34m  BWG  -2354890.8011  -4647166.3107   3668871.7147  -0.0156  0.0063  -0.0030
+27   34m  BWG  -2349915.4350  -4656756.3952   3660096.4346  -0.0156  0.0063  -0.0030
+28   34m  BWG  -2350102.0244  -4656673.3579   3660103.4833  -0.0156  0.0063  -0.0030
+34   34m  BWG  -4461147.1937   2682439.2835  -3674392.9674  -0.0366  0.0005   0.0454
+35   34m  BWG  -4461273.1915   2682568.9709  -3674151.9281  -0.0366  0.0005   0.0454
+36   34m  BWG  -4461168.5253   2682814.7050  -3674083.7418  -0.0366  0.0005   0.0454
+42   34m  H-D  -4460981.4540   2682413.5169  -3674581.4930  -0.0366  0.0005   0.0454
+43   70m  A-E  -4460894.9746   2682361.5266  -3674747.9625  -0.0366  0.0005   0.0454
+45   34m  HEF  -4460935.6766   2682765.7043  -3674380.8142  -0.0366  0.0005   0.0454
+54   34m  BWG   4849434.4781   -360723.8954   4114618.8518  -0.0074  0.0192   0.0149
+55   34m  BWG   4849525.2463   -360606.0885   4114495.1006  -0.0074  0.0192   0.0149
+56   34m  BWG   4849421.6689   -360549.6544   4114647.0032  -0.0074  0.0192   0.0149
+61*  26m  H-D   4849242.7625   -360277.7719   4114882.6229  -0.0074  0.0192   0.0149
+61   34m  H-D   4849245.0762   -360277.9438   4114884.5996  -0.0074  0.0192   0.0149
+63   70m  A-E   4849092.4565   -360180.3397   4115109.2231  -0.0074  0.0192   0.0149
+65*  34m  HEF   4849336.6188   -360488.6352   4114748.9332  -0.0074  0.0192   0.0149
+65   34m  HEF   4849339.6208   -360427.6502   4114750.7302  -0.0074  0.0192   0.0149
+
+Types:
+
+A-E are azimuth-elevaiton antennas
+HEF are high-efficiency azimuth-elevation antennas
+BWG are beam waveguide aziumuth-elevation antennas
+H-D are hour-angle/declination antennas
+
+The antenna models for each type are described in section 10 of Moyer,
+<A HREF= "http://descanso.jpl.nasa.gov/Monograph/series2/Descanso2_S10.pdf">Formulation for Observed and Computed Values of Deep Space Network Data Types for Navigation</A>
+Deep Space Communications and Navigation Series, 2000.
+
+Position changes:
+
+Position 12* is for use prior to October 1978, when the antenna was raised to increase its diameter.
+Position 13* is for use prior to 1990, when the 26m antenna was de-commisioned.
+Position 61* is for use prior to August 1979, when the antenna was raised to increase its diemater.
+Position 65* is for use prior to March 2005, when the 34-HEF antenna was moved to a more stable site.
+
+Notes:
+
+Several centimeter-level effects are different from the offical ITRF 2005 release.
+
+1) The relative station locations here are based on JPL VLBI estimatation,
+and then then mapped to ITRF 2005.
+
+2) For spacecraft tracking the antenna subreflector position is adjusted
+to maximize system gain, whereas for VLBI observations the subreflector
+is not moved. This causes a difference in effective vertical location
+of 77 mm for 70 meter antennas (DSS 14, 43, 63) and 13.5 m for high-efficiency
+34 meter antennas (15, 45, 65) and 9 mm for the beam waveguide antennas.
+The positions here reflect the spacecraft-tracking configuration.
+Adjustments for other antennas are not known at this time but are probably about 15 mm.
+
+3) There are several known centimeter-level shifts in positions due to
+earthquakes (Goldstone) and due to antenna repair (DSS 65 in Madrid)
+that would take a more complicated table to represent. Where these are known,
+the positions above reflect the later position.
+
+Last updated by W M Folkner, 15 March 2017

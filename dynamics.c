@@ -1,6 +1,7 @@
 #include "dynamics.h"
 #include "SpiceUsr.h"
 #include "mercury_gravity.h"
+#include "include/body_constants.h"
 #include "include/astro_types.hpp"
 
 #define AU_KM      149597870.7        /* 1 АЕ в км */
@@ -17,17 +18,17 @@ const char *BODY_NAMES[N_BODIES] = {
 };
 
 const double BODY_GM[N_BODIES] = {
-    2.9591220828411956e-04, /* Sun */
-    MERCURY_GM_AU3_DAY2, /* Mercury: consistent with HgM009.sha */
-    7.2434523326441187e-10, /* Venus */
-    8.8876924467071022e-10, /* Earth */
-    9.5495488297258119e-11, /* Mars */
-    2.8253458252257917e-07, /* Jupiter */
-    8.4597059933762903e-08, /* Saturn */
-    1.0931894624024351e-11, /* Moon */
-    1.2920265649682399e-08, /* Uranus */
-    1.5243573478851939e-08, /* Neptune */
-    2.1750964786022513e-12  /* Pluto */
+    BODY_GM_SUN_AU3_DAY2,
+    BODY_GM_MERCURY_AU3_DAY2, /* Mercury: consistent with HgM009.sha */
+    BODY_GM_VENUS_AU3_DAY2,
+    BODY_GM_EARTH_AU3_DAY2,
+    BODY_GM_MARS_AU3_DAY2,
+    BODY_GM_JUPITER_AU3_DAY2,
+    BODY_GM_SATURN_AU3_DAY2,
+    BODY_GM_MOON_AU3_DAY2,
+    BODY_GM_URANUS_AU3_DAY2,
+    BODY_GM_NEPTUNE_AU3_DAY2,
+    BODY_GM_PLUTO_AU3_DAY2
 };
 
 

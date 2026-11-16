@@ -1,3 +1,4 @@
+#pragma once
 #include <math.h>
 
 static inline double vdot(const double a[3], const double b[3]) {

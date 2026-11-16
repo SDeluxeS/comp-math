@@ -20,7 +20,7 @@ constexpr double kMasToRadians =
 
 } // namespace
 
-Array3 Station::positionItrf(double tdbSeconds) const {
+std::array<double, 3> Station::positionItrf(double tdbSeconds) const {
     const JulianDate tdb =
         JulianDate::fromJ2000Seconds(tdbSeconds);
 
@@ -28,10 +28,10 @@ Array3 Station::positionItrf(double tdbSeconds) const {
         JulianDate::fromJulianDate(2453371.5);
 
     const double elapsedDays = tdb.daysSince(referenceEpoch);
-    const double result[3];
-    vadd(referencePositionKm.data(),
-         scale3(velocityKmPerDay, elapsedDays).data(),
-         result);
+    std::array<double, 3> result{};
+    std::array<double, 3> temp{};
+    vscale(velocityKmPerDay.data(), elapsedDays, temp.data());
+    vadd(referencePositionKm.data(),temp.data(), result.data());
     return result;
 }
 
@@ -157,7 +157,7 @@ const Station& StationCatalog::at(const std::string& id) const {
     return it->second;
 }
 
-Array3 StationTransformer::barycentric(
+std::array<double, 3> StationTransformer::barycentric(
     const Station& station,
     double tdbSeconds) const {
 
@@ -211,8 +211,8 @@ Array3 StationTransformer::barycentric(
     const std::array<double, 3> earthFromSsb =
         spice_.position(399, tdbSeconds);
 
-    double result[3];
-    vadd(earthFromSsb.data(), stationFromEarth.data(), result);
+    std::array<double, 3> result{};
+    vadd(earthFromSsb.data(), stationFromEarth.data(), result.data());
     return result;
 }
 

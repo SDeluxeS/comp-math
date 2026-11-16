@@ -1,5 +1,5 @@
 #include "include/light_time.hpp"
-
+#include "include/body_constants.h"
 #include <array>
 #include <cmath>
 #include <stdexcept>
@@ -21,9 +21,9 @@ double stableSumMinusDistance(const std::array<double, 3>& a,
     const double direct = sum - distanceAB;
 
     if (vdot(a.data(), b.data()) < 0.0) {
-        const double c[3];
-        vcross(a.data(), b.data(), c);
-        const double crossSquared = vdot(c, c);
+        std::array<double, 3> c{};
+        cross3(a.data(), b.data(), c.data());
+        const double crossSquared = vdot(c.data(), c.data());
 
         const double q = normA * normB - vdot(a.data(), b.data());
         const double denominator = q * (sum + distanceAB);
@@ -64,34 +64,34 @@ LightTimeSolver::LightTimeSolver(
             "Invalid light-time solver parameters");
     }
 
-    sun_ = {
-        10,
-        spice_.gravitationalParameter(
-            10, 132712440041.93938)
+    constexpr double gmScale = BODY_GM_AU3_DAY2_TO_KM3_SEC2;
+
+    sun_ = {10, BODY_GM_SUN_AU3_DAY2 * gmScale};
+
+    struct BodyConstant {
+        int naif;
+        double gmAu3Day2;
     };
 
-    // GM в км^3/с^2. Если GM доступен в kernels,
-    // берётся значение из SPICE, иначе используется запасное.
-    const std::array<Body, 10> defaults{{
-        {1,   22031.868551},       // Mercury system
-        {2,   324858.592},         // Venus system
-        {399, 398600.435507},      // Earth
-        {301, 4902.800066},        // Moon
-        {4,   42828.375816},       // Mars system
-        {5,   126712764.8},        // Jupiter system
-        {6,   37940584.8418},      // Saturn system
-        {7,   5794556.4},          // Uranus system
-        {8,   6836527.10058},      // Neptune system
-        {9,   975.5}               // Pluto system
+    const std::array<BodyConstant, 10> bodyConstants{{
+        {1,   BODY_GM_MERCURY_AU3_DAY2},  // Mercury system
+        {2,   BODY_GM_VENUS_AU3_DAY2},    // Venus system
+        {399, BODY_GM_EARTH_AU3_DAY2},    // Earth
+        {301, BODY_GM_MOON_AU3_DAY2},     // Moon
+        {4,   BODY_GM_MARS_AU3_DAY2},     // Mars system
+        {5,   BODY_GM_JUPITER_AU3_DAY2},  // Jupiter system
+        {6,   BODY_GM_SATURN_AU3_DAY2},   // Saturn system
+        {7,   BODY_GM_URANUS_AU3_DAY2},   // Uranus system
+        {8,   BODY_GM_NEPTUNE_AU3_DAY2},  // Neptune system
+        {9,   BODY_GM_PLUTO_AU3_DAY2}     // Pluto system
     }};
 
-    otherBodies_.reserve(defaults.size());
+    otherBodies_.reserve(bodyConstants.size());
 
-    for (const Body& body : defaults) {
+    for (const BodyConstant& body : bodyConstants) {
         otherBodies_.push_back({
             body.naif,
-            spice_.gravitationalParameter(
-                body.naif, body.gmKm3PerSec2)
+            body.gmAu3Day2 * gmScale
         });
     }
 }
@@ -109,16 +109,16 @@ double LightTimeSolver::shapiroDelay(
         const std::array<double, 3> bodyB =
             spice_.position(body.naif, tB);
 
-        const double a[3];
-        vsub(rA.data(), bodyA.data(), a);
-        const double[3] b;
-        vsub(rB.data(), bodyB.data(), b);
+        std::array<double, 3> a{};
+        vsub(rA.data(), bodyA.data(), a.data());
+        std::array<double, 3> b{};
+        vsub(rB.data(), bodyB.data(), b.data());
 
-        const double r1 = vnorm(a);
-        const double r2 = vnorm(b);
-        const double b_diff_a[3];
-        vsub(b, a, b_diff_a);
-        const double r12 = vnorm(b_diff_a);
+        const double r1 = vnorm(a.data());
+        const double r2 = vnorm(b.data());
+        std::array<double, 3> b_diff_a{};
+        vsub(b.data(), a.data(), b_diff_a.data());
+        const double r12 = vnorm(b_diff_a.data());
 
         double denominator =
             stableSumMinusDistance(a, b, r1, r2, r12);
@@ -172,8 +172,10 @@ double LightTimeSolver::legEquation(
     double* geometric,
     double* shapiro) const {
 
-    const double geometricSec =
-        norm3(sub3(rB, rA)) / cKmPerSec_;
+    std::array<double, 3> delta{};
+    vsub(rB.data(), rA.data(), delta.data());
+
+    const double geometricSec = vnorm(delta.data()) / cKmPerSec_;
 
     const double shapiroSec =
         shapiroDelay(tA, rA, tB, rB);
@@ -200,8 +202,9 @@ LightTimeLeg LightTimeSolver::solveDownlink(
     const std::array<double, 3> r2AtGuess =
         spacecraft_.barycentricPosition(t3TdbSec, spice_);
 
-    double t2 = t3TdbSec -
-        norm3(sub3(r3, r2AtGuess)) / cKmPerSec_;
+    std::array<double,3> initialDelta{};  
+    vsub(r3.data(), r2AtGuess.data(), initialDelta.data()); 
+    double t2 = t3TdbSec - vnorm(initialDelta.data()) / cKmPerSec_;
 
     double residual = 0.0;
     constexpr int maxIterations = 50;
@@ -265,8 +268,9 @@ LightTimeLeg LightTimeSolver::solveUplink(
     const std::array<double, 3> r1AtGuess =
         stationTransformer_.barycentric(transmitter, t2TdbSec);
 
-    double t1 = t2TdbSec -
-        norm3(sub3(r2, r1AtGuess)) / cKmPerSec_;
+    std::array<double, 3> initialDelta{};
+    vsub(r2.data(), r1AtGuess.data(), initialDelta.data());
+    double t1 = t2TdbSec - vnorm(initialDelta.data()) / cKmPerSec_;
 
     double residual = 0.0;
     constexpr int maxIterations = 50;
