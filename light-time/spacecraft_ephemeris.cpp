@@ -58,18 +58,18 @@ SpacecraftEphemeris::SpacecraftEphemeris(
     std::vector<double> zs;
 
     std::string line;
-    std::size_t lineNumber = 0;
+    int lineNumber = 0;
 
     while (std::getline(input, line)) {
         ++lineNumber;
 
         const std::string epochKey = "Epoch_TDB_JD=";
-        const std::size_t epochPos = line.find(epochKey);
+        const int epochPos = line.find(epochKey);
         if (epochPos != std::string::npos) {
             const std::string epochText =
                 line.substr(epochPos + epochKey.size());
             try {
-                std::size_t consumed = 0;
+                int consumed = 0;
                 epochTdbJd = std::stod(epochText, &consumed);
                 hasEpoch = consumed > 0 && std::isfinite(epochTdbJd);
             } catch (const std::exception&) {

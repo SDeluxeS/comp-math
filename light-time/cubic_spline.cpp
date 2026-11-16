@@ -19,7 +19,7 @@ void CubicSpline::reset(const std::vector<double>& x,
             "CubicSpline requires at least two points");
     }
 
-    for (std::size_t i = 0; i < x.size(); ++i) {
+    for (int i = 0; i < x.size(); ++i) {
         if (!std::isfinite(x[i]) || !std::isfinite(y[i])) {
             throw std::invalid_argument(
                 "CubicSpline input contains non-finite values");
@@ -35,22 +35,22 @@ void CubicSpline::reset(const std::vector<double>& x,
     y_ = y;
     secondDerivatives_.assign(x.size(), 0.0);
 
-    const std::size_t n = x.size();
+    const int n = x.size();
 
     // Естественный сплайн: вторая производная на концах равна нулю.
     if (n == 2) {
         return;
     }
 
-    const std::size_t m = n - 2;
+    const int m = n - 2;
 
     std::vector<double> lower(m);
     std::vector<double> diagonal(m);
     std::vector<double> upper(m);
     std::vector<double> rhs(m);
 
-    for (std::size_t j = 0; j < m; ++j) {
-        const std::size_t i = j + 1;
+    for (int j = 0; j < m; ++j) {
+        const int i = j + 1;
 
         const double h0 = x_[i] - x_[i - 1];
         const double h1 = x_[i + 1] - x_[i];
@@ -66,7 +66,7 @@ void CubicSpline::reset(const std::vector<double>& x,
     }
 
     // Прямой ход метода прогонки.
-    for (std::size_t i = 1; i < m; ++i) {
+    for (int i = 1; i < m; ++i) {
         const double factor = lower[i] / diagonal[i - 1];
         diagonal[i] -= factor * upper[i - 1];
         rhs[i] -= factor * rhs[i - 1];
@@ -76,13 +76,13 @@ void CubicSpline::reset(const std::vector<double>& x,
     std::vector<double> solution(m);
     solution[m - 1] = rhs[m - 1] / diagonal[m - 1];
 
-    for (std::size_t j = m - 1; j > 0; --j) {
+    for (int j = m - 1; j > 0; --j) {
         solution[j - 1] =
             (rhs[j - 1] - upper[j - 1] * solution[j]) /
             diagonal[j - 1];
     }
 
-    for (std::size_t j = 0; j < m; ++j) {
+    for (int j = 0; j < m; ++j) {
         secondDerivatives_[j + 1] = solution[j];
     }
 }
@@ -101,13 +101,13 @@ double CubicSpline::operator()(double xQuery) const {
 
     auto it = std::upper_bound(x_.begin(), x_.end(), xQuery);
 
-    std::size_t i;
+    int i;
     if (it == x_.begin()) {
         i = 0;
     } else if (it == x_.end()) {
         i = x_.size() - 2;
     } else {
-        i = static_cast<std::size_t>(it - x_.begin() - 1);
+        i = it - x_.begin() - 1;
     }
 
     const double h = x_[i + 1] - x_[i];

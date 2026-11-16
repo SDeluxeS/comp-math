@@ -67,7 +67,7 @@ EopTable::EopTable(const std::string& fileName) {
 
         mjdTai.push_back(values[0]);
 
-        for (std::size_t i = 0; i < 5; ++i) {
+        for (int i = 0; i < 5; ++i) {
             columns[i].push_back(values[i + 1]);
         }
     }
@@ -77,7 +77,7 @@ EopTable::EopTable(const std::string& fileName) {
             "EOP file must contain at least two data rows");
     }
 
-    for (std::size_t i = 1; i < mjdTai.size(); ++i) {
+    for (int i = 1; i < mjdTai.size(); ++i) {
         if (!(mjdTai[i] > mjdTai[i - 1])) {
             throw std::runtime_error(
                 "EOP MJD values must be strictly increasing");
@@ -95,7 +95,7 @@ EopTable::EopTable(const std::string& fileName) {
         x.push_back(mjd - mjdOrigin_);
     }
 
-    for (std::size_t i = 0; i < splines_.size(); ++i) {
+    for (int i = 0; i < splines_.size(); ++i) {
         splines_[i].reset(x, columns[i]);
     }
 }
