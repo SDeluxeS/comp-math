@@ -3,6 +3,7 @@
 #include "include/light-time/light_time.hpp"
 #include "include/light-time/spacecraft_ephemeris.hpp"
 #include "include/spice.hpp"
+#include <fstream>
 #include "include/light-time/stations.hpp"
 #include "include/light-time/time_scales.hpp"
 
@@ -12,7 +13,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace pipeline {}
+namespace pipeline {
 
 int runLightTime(
     const std::string& metaKernel,
@@ -93,7 +94,7 @@ int runLightTime(
             out << "Round-trip total = "
                     << result.up.totalSec + result.down.totalSec
                     << " s\n";
-        }            
+        };           
 
         printResult(std::cout);
 
@@ -128,6 +129,7 @@ int runLightTime(
         return 1;
     }
 }
+} // namespace pipeline
 
 struct ReferenceRecord {
     double t3Jd{};
@@ -135,6 +137,7 @@ struct ReferenceRecord {
     double uplinkSec{};
     double t1Jd{};
     int dsn{};
+    int lineNumber = 0;
 };
 
 struct MaxDifference {
@@ -144,6 +147,14 @@ struct MaxDifference {
     double referenceValue{};
     double calculatedValue{};
 };
+
+std::ostream& operator<<(std::ostream& os, const MaxDifference& m) {
+    return os << std::setprecision(15) << m.differenceSec << " s"
+              << " (строка " << m.lineNumber
+              << ", DSN " << m.dsn
+              << ", ref = " << m.referenceValue
+              << ", calc = " << m.calculatedValue << ")";
+}
 
 std::vector<ReferenceRecord> readReferenceFile(const std::string& referenceFile) {
     std::ifstream input(referenceFile);

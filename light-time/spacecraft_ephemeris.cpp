@@ -69,7 +69,7 @@ SpacecraftEphemeris::SpacecraftEphemeris(
             const std::string epochText =
                 line.substr(epochPos + epochKey.size());
             try {
-                int consumed = 0;
+                std::size_t consumed = 0;
                 epochTdbJd = std::stod(epochText, &consumed);
                 hasEpoch = consumed > 0 && std::isfinite(epochTdbJd);
             } catch (const std::exception&) {

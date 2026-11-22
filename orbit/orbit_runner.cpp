@@ -14,13 +14,13 @@
 
 namespace pipeline {
     int runOrbit(const std::string& outputFile) {
-        const double JD0      = 2455646.83;
+        const double JD0      = 2455642.75;
         const double J2000_JD = 2451545.0;
 
         double h_sec = 60.0;                  
         double h_days = h_sec / DAY_SEC;      
         
-        double T_sec = 20.0 * 3600.0;         
+        double T_sec = 26.0 * 3600.0;         
         int n_steps = (int)(T_sec / h_sec);  
 
         double* ts = nullptr;
@@ -50,6 +50,7 @@ namespace pipeline {
         // Загрузка SPICE-ядер
         furnsh_c("kernels/de442t.bsp");     
         furnsh_c("kernels/msgr_final.bsp"); 
+        spiceInitialized = true;
 
         if (failed_c()) {
             std::cerr << "Ошибка при загрузке SPICE-ядер\n";
@@ -102,7 +103,7 @@ namespace pipeline {
         integrate(rhs, et0_sec / DAY_SEC, state0_AU, STATE_DIM, h_days, n_steps, ts, ys);
         printf("Интегрирование завершено успешно.\n");
 
-        fout = fopen("orbit_diff.txt", "w");
+        fout = fopen(outputFile.c_str(), "w"); 
 
         if (!fout) {
             std::cerr << "Не удалось создать файл orbit_diff.txt\n";
@@ -158,7 +159,6 @@ namespace pipeline {
                     ref_rel[3], ref_rel[4], ref_rel[5]);               // Референс vx,vy,vz
         }
         
-        fclose(fout);
 
         printf("\nРЕЗУЛЬТАТЫ СРАВНЕНИЯ (за %.1f ч)\n", T_sec / 3600.0);
         printf("Максимальное отклонение по координатам |dr| = %.6e км\n", max_dr);
