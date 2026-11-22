@@ -9,15 +9,6 @@ constexpr double PI = 3.141592653589793238462643383279502884;
 constexpr double DEG_TO_RAD = PI / 180.0;
 constexpr double AU_KM = 149597870.7;
 constexpr double DAY_SEC = 86400.0;
-
-/*
- * HgM009 uses the gravity-frame orientation consistent with HgM008.
- * Pole coordinates, spin rate and libration amplitude use the HgM008
- * solution (Genova et al., 2019), which HgM009 explicitly follows.
- * Pole precession, W0 and the libration phase convention follow
- * Stark et al. (2015). The periodic coefficient ratios follow the
- * Margot (2009) series; the series is scaled to the HgM008 amplitude.
- */
 constexpr double ALPHA0_DEG = 281.0082;
 constexpr double DELTA0_DEG = 61.4164;
 constexpr double ALPHA_RATE_DEG_PER_CENTURY = -0.032808;
@@ -72,14 +63,7 @@ void rotation_x_passive(double angle, double R[9])
         R[i] = values[i];
 }
 
-/*
- * Transformation from J2000/ICRF to Mercury body-fixed coordinates.
- * With standard right-handed passive coordinate-rotation matrices and
- * alpha=right ascension, delta=declination:
- * R_BF<-J2000 = R3(W) R1(90 deg - delta) R3(90 deg + alpha).
- * This construction makes the third row of R equal to the inertial
- * unit vector toward Mercury's north pole. Matrices below are passive.
- */
+
 void mercury_j2000_to_body_fixed(double et_days, double R[9])
 {
     const double T = et_days / 36525.0;
@@ -89,10 +73,6 @@ void mercury_j2000_to_body_fixed(double et_days, double R[9])
     const double delta_deg =
         DELTA0_DEG + DELTA_RATE_DEG_PER_CENTURY * T;
 
-    /*
-     * Stark et al. (2015): M_k = k*n0*(t+t0), with t in days
-     * from J2000. The five amplitudes are the Margot (2009) series.
-     */
     const double d = et_days;
     const double base_phase = MERCURY_MEAN_MOTION_DEG_PER_DAY
                             * (d + LIBRATION_PHASE_EPOCH_DAYS);
@@ -151,7 +131,6 @@ extern "C" int mercury_gravity_acceleration(
     double R_body_from_j2000[9];
     mercury_j2000_to_body_fixed(et_days, R_body_from_j2000);
 
-    /* Position vector: J2000 -> Mercury body-fixed. */
     double r_body_fixed[3] = {0.0, 0.0, 0.0};
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j)
@@ -159,11 +138,6 @@ extern "C" int mercury_gravity_acceleration(
                              * r_j2000_au[j];
     }
 
-    /*
-     * HgM009.sha starts at degree 1 (degree 0 is absent), and grav.cilm
-     * is zero-initialized. Therefore this is the harmonic correction only;
-     * the central point-mass term is already present in the EIH model.
-     */
     double a_body_fixed[3];
     shGravCalculate(grav,
                     r_body_fixed[0],
@@ -171,7 +145,6 @@ extern "C" int mercury_gravity_acceleration(
                     r_body_fixed[2],
                     a_body_fixed);
 
-    /* Acceleration vector: Mercury body-fixed -> J2000 (R transpose). */
     for (int j = 0; j < 3; ++j) {
         a_j2000_au_day2[j] = 0.0;
         for (int i = 0; i < 3; ++i)

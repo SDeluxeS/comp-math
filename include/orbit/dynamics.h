@@ -1,6 +1,9 @@
 #ifndef DYNAMICS_H
 #define DYNAMICS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* Размерность фазового вектора y: [x, y, z, vx, vy, vz] */
 #define STATE_DIM 6
 
@@ -16,4 +19,10 @@ extern const double BODY_GM[N_BODIES];
  */
 void rhs(double et, const double y[STATE_DIM], double dydt[STATE_DIM]);
 
+
+#ifdef __cplusplus
+}
 #endif
+
+#endif
+

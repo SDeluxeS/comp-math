@@ -1,5 +1,8 @@
 #ifndef INTEGRATOR_H
 #define INTEGRATOR_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Определяем тип "указатель на функцию", чтобы интегратор мог принимать любую правую часть */
 typedef void (*rhs_fn)(double t, const double y[], double dydt[]);
@@ -12,5 +15,10 @@ void rk8_step(rhs_fn f, double t, const double y[], int n,
 void integrate(rhs_fn f, double t0, const double y0[], int n,
                double h, int n_steps,
                double *ts, double *ys);
+
+
+               #ifdef __cplusplus
+}
+#endif
 
 #endif
