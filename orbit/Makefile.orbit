@@ -1,0 +1,50 @@
+.DEFAULT_GOAL := all
+
+CC  ?= gcc
+CXX ?= g++
+
+BUILD_DIR := build/orbit
+
+CSPICE_LIB ?= lib/cspice.a
+
+SHTOOLS_LIBS ?= -lSHTOOLS -lfftw3 -llapack -lblas -lgfortran
+SHTOOLS_LDFLAGS ?= -Llib
+
+CPPFLAGS += -I. -Iinclude -Iinclude/orbit
+
+CFLAGS   += -O2 -Wall
+CXXFLAGS += -std=c++17 -O2 -Wall
+
+C_SOURCES := \
+    orbit/dynamics.c \
+    orbit/integrator.c
+
+CXX_SOURCES := \
+    orbit/mercury_gravity.cpp \
+    orbit/grav.cpp \
+    orbit/orbit_runner.cpp
+
+C_OBJECTS := $(patsubst orbit/%.c,$(BUILD_DIR)/%.o,$(C_SOURCES))
+CXX_OBJECTS := $(patsubst orbit/%.cpp,$(BUILD_DIR)/%.o,$(CXX_SOURCES))
+
+OBJECTS := $(C_OBJECTS) $(CXX_OBJECTS)
+
+.PHONY: all clean check-deps
+
+all: $(OBJECTS)
+
+check-deps:
+	@test -f "$(CSPICE_LIB)" || { echo "Missing $(CSPICE_LIB)"; exit 1; }
+	@test -f "lib/libSHTOOLS.a" || { echo "Missing lib/libSHTOOLS.a"; exit 1; }
+
+$(BUILD_DIR)/%.o: orbit/%.c | check-deps
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/%.o: orbit/%.cpp | check-deps
+	@mkdir -p $(@D)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -rf $(BUILD_DIR)
+

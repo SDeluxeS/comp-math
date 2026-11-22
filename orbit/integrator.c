@@ -1,5 +1,5 @@
-#include "integrator.h"
-#include "rk8_coeffs.h"
+#include "include/orbit/integrator.h"
+#include "include/orbit/rk8_coeffs.h"
 #include <string.h>
 
 void rk8_step(rhs_fn f, double t, const double y[], int n,

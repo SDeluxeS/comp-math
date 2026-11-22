@@ -1,4 +1,4 @@
-#include "include/time_scales.hpp"
+#include "include/light-time/time_scales.hpp"
 #include <include/sofa.h>
 
 #include <cmath>

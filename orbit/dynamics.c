@@ -1,6 +1,6 @@
-#include "dynamics.h"
+#include "include/orbit/dynamics.h"
 #include "SpiceUsr.h"
-#include "mercury_gravity.h"
+#include "include/orbit/mercury_gravity.h"
 #include "include/body_constants.h"
 #include "include/astro_types.hpp"
 

@@ -1,4 +1,4 @@
-#include "include/stations.hpp"
+#include "include/light-time/stations.hpp"
 #include "include/astro_types.hpp"
 #include <sofa.h>
 #include <cctype>

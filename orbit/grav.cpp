@@ -1,6 +1,6 @@
 #include <cmath>
 #include <string.h>
-#include "grav.h"
+#include "include/orbit/grav.h"
 #include "include/shtools.h"
 
 ShGrav shGravCreate(int lmax, double gm, double r0) {

@@ -1,5 +1,5 @@
-#include "mercury_gravity.h"
-#include "grav.h"
+#include "include/orbit/mercury_gravity.h"
+#include "include/orbit/grav.h"
 
 #include <cmath>
 

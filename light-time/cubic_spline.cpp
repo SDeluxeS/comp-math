@@ -1,4 +1,4 @@
-#include "cubic_spline.hpp"
+#include "include/light-time/cubic_spline.hpp"
 
 #include <algorithm>
 #include <cmath>

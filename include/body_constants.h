@@ -1,7 +1,7 @@
 #ifndef BODY_CONSTANTS_H
 #define BODY_CONSTANTS_H
 
-#include "mercury_gravity.h"
+#include "include/orbit/mercury_gravity.h"
 
 /*
  * Shared astronomical constants for the RK dynamics and Light-Time parts.

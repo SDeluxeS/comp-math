@@ -1,4 +1,4 @@
-#include "include/light_time.hpp"
+#include "include/light-time/light_time.hpp"
 #include "include/body_constants.h"
 #include <array>
 #include <cmath>
